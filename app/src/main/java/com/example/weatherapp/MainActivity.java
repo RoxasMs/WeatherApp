@@ -1,28 +1,35 @@
 package com.example.weatherapp;
 
-import android.os.AsyncTask;
+import static android.content.ContentValues.TAG;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+
+
+
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String API_KEY = "A";  // Reemplaza con tu clave de API
-    private static final String API_URL = "https://api.openweathermap.org/data/2.5/weather?q=Madrid&appid=" + API_KEY;
-
+    private static final String API_KEY = "0003d3115fd24d6d15c28ea7188d92e2";  // Reemplaza con tu clave de API
+    private static final String API_URL = "\"https://api.openweathermap.org/data/2.5/weather?q=%s&appid=%s";
+    private static int HTTP_OK = 200;
+    private static int HTTP_BAD_REQUEST = 404;
+    private RequestQueue mRequestQueue;
     private Button weatherButton;
 
     @Override
@@ -31,58 +38,66 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         weatherButton = findViewById(R.id.button_search);
-
+        EditText cityInput = findViewById(R.id.city);
         weatherButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new FetchWeatherTask().doInBackground();
+                String cityName = cityInput.getText().toString();
+                if(cityName != "") {
+                    getData(cityName);
+                }
             }
         });
+
     }
 
-    private class FetchWeatherTask extends AsyncTask<Void, Void, String> {
-
-        @Override
-        protected String doInBackground(Void... params) {
-            try {
-                // Hacer la solicitud a la API
-                URL url = new URL(API_URL);
-                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestMethod("GET");
-
-                urlConnection.setRequestProperty("accept","application/json");
-                InputStream responseStream = urlConnection.getInputStream();
-                return responseStream.toString();
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
-            }
-
+    private void getData(String cityName) {
+        // Verifica si ya hay una instancia de RequestQueue creada
+        if (mRequestQueue == null) {
+            // Si no hay una instancia, crea una nueva
+            mRequestQueue = Volley.newRequestQueue(this);
         }
 
-        @Override
-        protected void onPostExecute(String response) {
-            if (response != null) {
-                // Procesar la respuesta JSON
-                try {
-                    JSONObject jsonResponse = new JSONObject(response);
-                    JSONObject coord = jsonResponse.getJSONObject("coord");
-                    double lat = coord.getDouble("lat");
-                    double lon = coord.getDouble("lon");
-                    showCoordinates(lat, lon);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    Toast.makeText(MainActivity.this, "Error al procesar la respuesta JSON", Toast.LENGTH_SHORT).show();
+        String url = String.format("https://api.openweathermap.org/data/2.5/weather?q=%s&appid=%s", cityName, API_KEY);
+
+        // JsonObjectRequest se utiliza para solicitudes de tipo JSON
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            // Código para procesar el JSON
+                            int responseCode = (int) response.get("cod");
+                            if (responseCode == HTTP_OK){
+                                Object[] data = parseWeatherJson(response);
+                                String skyState = (String) data[1];
+                                double temp = (Double) data[0];
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                        Log.e(TAG, "Error en la solicitud: " + error.getMessage());
+
+                    }
                 }
-            } else {
-                Toast.makeText(MainActivity.this, "Error en la solicitud", Toast.LENGTH_SHORT).show();
-            }
-        }
+        );
+        mRequestQueue.add(request);
     }
 
-    private void showCoordinates(double lat, double lon) {
-        String message = "Latitud: " + lat + "\nLongitud: " + lon;
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+
+    private Object[] parseWeatherJson(JSONObject response) throws JSONException {
+        JSONObject mainObject = (JSONObject) response.get("main");
+        JSONArray weatherArray = (JSONArray) response.get("weather");
+        JSONObject  weatherObject = (JSONObject) weatherArray.get(0);
+        Double currentTemp = (Double) mainObject.get("temp");
+        String skyState = (String) weatherObject.get("main") + " : " + (String) weatherObject.get("description");
+        return new Object[]{currentTemp,skyState};
     }
 }
 
