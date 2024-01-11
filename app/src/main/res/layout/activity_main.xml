@@ -2,39 +2,85 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#16191B"
     tools:context=".MainActivity">
 
     <TableLayout
         android:id="@+id/tableLayout"
-        android:layout_width="410dp"
-        android:layout_height="50dp"
+        android:layout_width="326dp"
+        android:layout_height="160dp"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.494"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.121"
-        tools:layout_editor_absoluteX="0dp">
+        app:layout_constraintVertical_bias="0.234">
 
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/state_sky"
+                android:id="@+id/city_name_label"
+                android:layout_width="95dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-black"
+                android:text="@string/city_name"
+                android:textColor="#FCFCFF" />
+
+            <TextView
+                android:id="@+id/city_name_field"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Current state of Sky" />
+                android:text="TextView"
+                android:textColor="#FCFCFF" />
+
         </TableRow>
 
         <TableRow
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="115dp">
 
             <TextView
-                android:id="@+id/current_temperature"
+                android:id="@+id/state_sky_label"
+                android:layout_width="98dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-black"
+                android:text="@string/sky_status"
+                android:textColor="#FCFCFF" />
+
+            <TextView
+                android:id="@+id/state_sky_field"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Current temperature" />
+                android:text="TextView"
+                android:textColor="#FCFCFF" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
+            <TextView
+                android:id="@+id/current_temperature_label"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fontFamily="sans-serif-black"
+                android:text="@string/current_temp"
+                android:textColor="#FCFCFF"
+                android:visibility="visible" />
+
+            <TextView
+                android:id="@+id/c_temp_field"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TextView"
+                android:textColor="#FCFCFF" />
         </TableRow>
 
     </TableLayout>
@@ -46,27 +92,36 @@
         android:text="Get Weather"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintHorizontal_bias="0.515"
+        app:layout_constraintStart_toEndOf="@+id/city"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.636" />
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayout"
-        android:layout_width="409dp"
-        android:layout_height="wrap_content"
-        tools:layout_editor_absoluteX="1dp"
-        tools:layout_editor_absoluteY="248dp" />
+        app:layout_constraintVertical_bias="0.067" />
 
     <EditText
         android:id="@+id/city"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Insert some City"
+        android:layout_width="235dp"
+        android:layout_height="64dp"
+        android:hint="Insert some City"
+        android:inputType="text"
+        android:singleLine="true"
+        android:textColor="#FCFCFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias="0.09"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.529" />
+        app:layout_constraintVertical_bias="0.056" />
+
+    <TextView
+        android:id="@+id/bt_status_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="52dp"
+        android:text="Bluetooth not Currently Supported"
+        android:textColor="#803B3B"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.953" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

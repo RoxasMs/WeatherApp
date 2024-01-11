@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -19,8 +20,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-
-
+import java.text.DecimalFormat;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -69,9 +69,20 @@ public class MainActivity extends AppCompatActivity {
                             // Código para procesar el JSON
                             int responseCode = (int) response.get("cod");
                             if (responseCode == HTTP_OK){
-                                Object[] data = parseWeatherJson(response);
-                                String skyState = (String) data[1];
-                                double temp = (Double) data[0];
+                                String[] data = parseWeatherJson(response);
+
+                                String temp = data[0];
+                                String skyState =  data[1];
+                                String name = data[2];
+
+                                TextView city_name_field = findViewById(R.id.city_name_field);
+                                city_name_field.setText(name);
+
+                                TextView state_sky_field = findViewById(R.id.state_sky_field);
+                                state_sky_field.setText(skyState);
+
+                                TextView c_temp_field = findViewById(R.id.c_temp_field);
+                                c_temp_field.setText(temp);
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -91,13 +102,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private Object[] parseWeatherJson(JSONObject response) throws JSONException {
+    private String[] parseWeatherJson(JSONObject response) throws JSONException {
         JSONObject mainObject = (JSONObject) response.get("main");
         JSONArray weatherArray = (JSONArray) response.get("weather");
         JSONObject  weatherObject = (JSONObject) weatherArray.get(0);
-        Double currentTemp = (Double) mainObject.get("temp");
+
+        String currentTemp = new DecimalFormat("#.00 ºC").format((Double) mainObject.get("temp") - 273.15);
         String skyState = (String) weatherObject.get("main") + " : " + (String) weatherObject.get("description");
-        return new Object[]{currentTemp,skyState};
+        String cityName = (String) response.get("name");
+        return new String[]{ currentTemp, skyState, cityName};
     }
 }
 
