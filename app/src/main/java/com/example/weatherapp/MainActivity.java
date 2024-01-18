@@ -4,6 +4,7 @@ import static android.content.ContentValues.TAG;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -16,11 +17,14 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.material.snackbar.Snackbar;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.DecimalFormat;
+import java.util.Objects;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -43,8 +47,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String cityName = cityInput.getText().toString();
-                if(cityName != "") {
+                hideKeyboard();
+                if((cityName != null && !cityName.isEmpty())) {
                     getData(cityName);
+                }else{
+                    showSnackbar("Put some city name");
                 }
             }
         });
@@ -52,21 +59,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getData(String cityName) {
-        // Verifica si ya hay una instancia de RequestQueue creada
         if (mRequestQueue == null) {
-            // Si no hay una instancia, crea una nueva
             mRequestQueue = Volley.newRequestQueue(this);
         }
 
         String url = String.format("https://api.openweathermap.org/data/2.5/weather?q=%s&appid=%s", cityName, API_KEY);
 
-        // JsonObjectRequest se utiliza para solicitudes de tipo JSON
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            // Código para procesar el JSON
                             int responseCode = (int) response.get("cod");
                             if (responseCode == HTTP_OK){
                                 String[] data = parseWeatherJson(response);
@@ -75,13 +78,20 @@ public class MainActivity extends AppCompatActivity {
                                 String skyState =  data[1];
                                 String name = data[2];
 
+                                findViewById(R.id.city_name_label).setVisibility(View.VISIBLE);
+                                findViewById(R.id.state_sky_label).setVisibility(View.VISIBLE);
+                                findViewById(R.id.current_temperature_label).setVisibility(View.VISIBLE);
+
                                 TextView city_name_field = findViewById(R.id.city_name_field);
+                                city_name_field.setVisibility(View.VISIBLE);;
                                 city_name_field.setText(name);
 
                                 TextView state_sky_field = findViewById(R.id.state_sky_field);
+                                state_sky_field.setVisibility(View.VISIBLE);
                                 state_sky_field.setText(skyState);
 
                                 TextView c_temp_field = findViewById(R.id.c_temp_field);
+                                c_temp_field.setVisibility(View.VISIBLE);
                                 c_temp_field.setText(temp);
                             }
                         } catch (JSONException e) {
@@ -93,8 +103,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         error.printStackTrace();
-                        Log.e(TAG, "Error en la solicitud: " + error.getMessage());
-
+                        showSnackbar("City don't Found");
                     }
                 }
         );
@@ -112,5 +121,25 @@ public class MainActivity extends AppCompatActivity {
         String cityName = (String) response.get("name");
         return new String[]{ currentTemp, skyState, cityName};
     }
+
+    private void showSnackbar(String text) {
+        Snackbar snackbar = Snackbar.make(
+                findViewById(android.R.id.content),
+                text,
+                Snackbar.LENGTH_SHORT
+        );
+        snackbar.show();
+    }
+
+
+    private void hideKeyboard() {
+        View currentFocus = getCurrentFocus();
+        if (currentFocus != null) {
+            InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(currentFocus.getWindowToken(), 0);
+        }
+    }
+
+
 }
 

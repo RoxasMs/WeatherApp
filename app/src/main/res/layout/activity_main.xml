@@ -30,14 +30,20 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-black"
                 android:text="@string/city_name"
-                android:textColor="#FCFCFF" />
+                android:textColor="#FCFCFF"
+                android:visibility="gone"
+
+                />
 
             <TextView
                 android:id="@+id/city_name_field"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="TextView"
-                android:textColor="#FCFCFF" />
+                android:textColor="#FCFCFF"
+                android:visibility="gone"
+
+                />
 
         </TableRow>
 
@@ -51,14 +57,20 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-black"
                 android:text="@string/sky_status"
-                android:textColor="#FCFCFF" />
+                android:textColor="#FCFCFF"
+                android:visibility="gone"
+
+                />
 
             <TextView
                 android:id="@+id/state_sky_field"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="TextView"
-                android:textColor="#FCFCFF" />
+                android:textColor="#FCFCFF"
+                android:visibility="gone"
+
+                />
 
         </TableRow>
 
@@ -73,14 +85,18 @@
                 android:fontFamily="sans-serif-black"
                 android:text="@string/current_temp"
                 android:textColor="#FCFCFF"
-                android:visibility="visible" />
+                android:visibility="gone"
+                />
 
             <TextView
                 android:id="@+id/c_temp_field"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="TextView"
-                android:textColor="#FCFCFF" />
+                android:textColor="#FCFCFF"
+                android:visibility="gone"
+
+                />
         </TableRow>
 
     </TableLayout>
