@@ -4,5 +4,6 @@
     <string name="sky_status">Sky Status: </string>
     <string name="get_weather_button">Get Weather!</string>
     <string name="city_name">City Name: </string>
+    <string name="insert_some_city">Insert some City</string>
 
 </resources>
