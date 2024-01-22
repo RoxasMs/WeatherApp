@@ -1,6 +1,17 @@
 package com.example.weatherapp;
 
 import static android.content.ContentValues.TAG;
+
+import android.annotation.SuppressLint;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
+import android.bluetooth.BluetoothSocketException;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -9,7 +20,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.content.BroadcastReceiver;
+
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -17,14 +33,19 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -35,6 +56,9 @@ public class MainActivity extends AppCompatActivity {
     private static int HTTP_BAD_REQUEST = 404;
     private RequestQueue mRequestQueue;
     private Button weatherButton;
+    private FloatingActionButton bluetoothButton;
+    UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,16 +72,84 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String cityName = cityInput.getText().toString();
                 hideKeyboard();
-                if((cityName != null && !cityName.isEmpty())) {
+                if ((cityName != null && !cityName.isEmpty())) {
                     getData(cityName);
-                }else{
+                } else {
                     showSnackbar("Put some city name");
+                }
+            }
+        });
+
+        bluetoothButton = findViewById(R.id.bluetoothButton);
+        bluetoothButton.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+            @Override
+            public void onClick(View v) {
+
+                try {
+                    BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+                    if (ActivityCompat.checkSelfPermission(v.getContext(), android.Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                        Intent enableBluetoothIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                        startActivityForResult(enableBluetoothIntent, 1);
+                    }
+
+                    Set<BluetoothDevice> bondedDevices = mBluetoothAdapter.getBondedDevices();
+                    for (BluetoothDevice device : bondedDevices) {
+                        if (device.getName().equals("HMSoft")) {
+                            TextView lum_field, temp_field;
+
+                            BluetoothSocket socket = device.createRfcommSocketToServiceRecord(MY_UUID);
+                            socket.connect();
+
+                            lum_field =  findViewById(R.id.amb_lum_field);
+                            temp_field = findViewById(R.id.amb_temp_field);
+                            // Visibility here?
+                            new BluetoothAsyncTask(socket, lum_field, temp_field).execute();
+                        }
+                    }
+                } catch (BluetoothSocketException e){
+                    showSnackbar("Error de Bluetooth");
+                } catch (IOException e) {
+                    showSnackbar("Error de Conexión");
                 }
             }
         });
 
     }
 
+/*
+    private void showPairedDevicesList(BluetoothAdapter mBluetoothAdapter) {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            Intent enableBluetoothIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+        }
+
+        Set<BluetoothDevice> pairedDevices =
+                mBluetoothAdapter.getBondedDevices();
+
+        final ArrayList<String> devicesList = new ArrayList<>();
+
+        for (BluetoothDevice device : pairedDevices) {
+            devicesList.add(device.getName());
+        }
+        final CharSequence[] items = devicesList.toArray(new CharSequence[devicesList.size()]);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Selecciona un dispositivo")
+                .setItems(items, new DialogInterface.OnClickListener() {
+                    @SuppressLint("MissingPermission")
+                    public void onClick(DialogInterface dialog, int which) {
+                        String selectedDeviceName = devicesList.get(which);
+                        for (BluetoothDevice d : pairedDevices) {
+                            if (selectedDeviceName.equals(d.getName()))
+                                connectToSelectedDevice(d);
+                        }
+                    }
+                });
+
+        builder.show();
+    }
+ */
     private void getData(String cityName) {
         if (mRequestQueue == null) {
             mRequestQueue = Volley.newRequestQueue(this);

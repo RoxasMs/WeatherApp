@@ -10,15 +10,15 @@
 
     <TableLayout
         android:id="@+id/tableLayout"
-        android:layout_width="305dp"
-        android:layout_height="104dp"
+        android:layout_width="307dp"
+        android:layout_height="172dp"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.764"
+        app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.534"
+        app:layout_constraintVertical_bias="0.536"
         tools:visibility="visible">
 
         <TableRow
@@ -105,6 +105,45 @@
 
         </TableRow>
 
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="visible">
+
+            <TextView
+                android:id="@+id/amb_lum_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ambient_luminosity"
+                android:visibility="visible" />
+
+            <TextView
+                android:id="@+id/amb_lum_field"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TextView"
+                android:visibility="visible" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/amb_temp_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ambient_temperature"
+                android:visibility="visible" />
+
+            <TextView
+                android:id="@+id/amb_temp_field"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TextView"
+                android:visibility="visible" />
+        </TableRow>
+
     </TableLayout>
 
     <Button
@@ -125,9 +164,9 @@
         android:layout_width="235dp"
         android:layout_height="64dp"
         android:drawableStart="@drawable/baseline_location"
-        android:text="@string/insert_some_city"
         android:inputType="text"
         android:singleLine="true"
+        android:text="@string/insert_some_city"
         android:textColor="#FFFFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -159,5 +198,18 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.059"
         app:srcCompat="@drawable/logo" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/bluetoothButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.954"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.976"
+        app:srcCompat="@android:drawable/stat_sys_data_bluetooth" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
