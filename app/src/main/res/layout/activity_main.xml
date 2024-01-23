@@ -115,14 +115,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/ambient_luminosity"
-                android:visibility="gone" />
+                android:visibility=""
+                app:drawableStartCompat="@drawable/baseline_brightness" />
+
 
             <TextView
                 android:id="@+id/amb_lum_field"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
                 android:text="@string/connecting"
-                android:visibility="gone" />
+                android:visibility="" />
         </TableRow>
 
         <TableRow
@@ -134,14 +137,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/ambient_temperature"
-                android:visibility="gone" />
+                android:visibility=""
+                app:drawableStartCompat="@drawable/baseline_therm" />
 
             <TextView
                 android:id="@+id/amb_temp_field"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="9dp"
                 android:text="@string/connecting"
-                android:visibility="gone" />
+                android:visibility="" />
         </TableRow>
 
     </TableLayout>
