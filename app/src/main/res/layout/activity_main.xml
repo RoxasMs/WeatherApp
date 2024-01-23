@@ -115,7 +115,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/ambient_luminosity"
-                android:visibility=""
+                android:visibility="gone"
                 app:drawableStartCompat="@drawable/baseline_brightness" />
 
 
@@ -125,7 +125,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="8dp"
                 android:text="@string/connecting"
-                android:visibility="" />
+                android:visibility="gone" />
         </TableRow>
 
         <TableRow
@@ -137,7 +137,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/ambient_temperature"
-                android:visibility=""
+                android:visibility="gone"
                 app:drawableStartCompat="@drawable/baseline_therm" />
 
             <TextView
@@ -146,7 +146,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="9dp"
                 android:text="@string/connecting"
-                android:visibility="" />
+                android:visibility="gone" />
         </TableRow>
 
     </TableLayout>
