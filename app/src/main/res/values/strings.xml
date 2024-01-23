@@ -7,4 +7,5 @@
     <string name="insert_some_city">Insert some City</string>
     <string name="ambient_luminosity">Ambient Luminosity</string>
     <string name="ambient_temperature">Ambient Temperature</string>
+    <string name="connecting">Connecting...</string>
 </resources>

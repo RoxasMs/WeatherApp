@@ -1,26 +1,19 @@
 package com.example.weatherapp;
 
-import static android.content.ContentValues.TAG;
-
-import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.bluetooth.BluetoothSocketException;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.content.BroadcastReceiver;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
@@ -42,8 +35,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -59,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     private FloatingActionButton bluetoothButton;
     UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
+    private BluetoothSocket socket;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,7 +77,6 @@ public class MainActivity extends AppCompatActivity {
             @RequiresApi(api = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
             @Override
             public void onClick(View v) {
-
                 try {
                     BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
@@ -93,63 +84,69 @@ public class MainActivity extends AppCompatActivity {
                         Intent enableBluetoothIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                         startActivityForResult(enableBluetoothIntent, 1);
                     }
+                    if (socket != null && socket.isConnected()) {
+                        showDisconnectDialog(v);
+                    } else {
+                        Set<BluetoothDevice> bondedDevices = mBluetoothAdapter.getBondedDevices();
+                        for (BluetoothDevice device : bondedDevices) {
+                            if (device.getName().equals("HMSoft")) {
+                                TextView lum_field, temp_field;
 
-                    Set<BluetoothDevice> bondedDevices = mBluetoothAdapter.getBondedDevices();
-                    for (BluetoothDevice device : bondedDevices) {
-                        if (device.getName().equals("HMSoft")) {
-                            TextView lum_field, temp_field;
+                                socket = device.createRfcommSocketToServiceRecord(MY_UUID);
+                                socket.connect();
 
-                            BluetoothSocket socket = device.createRfcommSocketToServiceRecord(MY_UUID);
-                            socket.connect();
+                                findViewById(R.id.amb_lum_label).setVisibility(View.VISIBLE);
+                                findViewById(R.id.amb_temp_label).setVisibility(View.VISIBLE);
 
-                            lum_field =  findViewById(R.id.amb_lum_field);
-                            temp_field = findViewById(R.id.amb_temp_field);
-                            // Visibility here?
-                            new BluetoothAsyncTask(socket, lum_field, temp_field).execute();
+                                lum_field = findViewById(R.id.amb_lum_field);
+                                temp_field = findViewById(R.id.amb_temp_field);
+
+                                lum_field.setVisibility(View.VISIBLE);
+                                temp_field.setVisibility(View.VISIBLE);
+
+                                new BluetoothAsyncTask(socket, lum_field, temp_field).execute();
+                            }
                         }
                     }
-                } catch (BluetoothSocketException e){
-                    showSnackbar("Error de Bluetooth");
-                } catch (IOException e) {
-                    showSnackbar("Error de Conexión");
-                }
+
+                    } catch(BluetoothSocketException e){
+                        showSnackbar("Error de Bluetooth");
+                    } catch(IOException e){
+                        showSnackbar("Error de Conexión");
+                    }
             }
         });
 
     }
 
-/*
-    private void showPairedDevicesList(BluetoothAdapter mBluetoothAdapter) {
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-            Intent enableBluetoothIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-        }
-
-        Set<BluetoothDevice> pairedDevices =
-                mBluetoothAdapter.getBondedDevices();
-
-        final ArrayList<String> devicesList = new ArrayList<>();
-
-        for (BluetoothDevice device : pairedDevices) {
-            devicesList.add(device.getName());
-        }
-        final CharSequence[] items = devicesList.toArray(new CharSequence[devicesList.size()]);
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Selecciona un dispositivo")
-                .setItems(items, new DialogInterface.OnClickListener() {
-                    @SuppressLint("MissingPermission")
-                    public void onClick(DialogInterface dialog, int which) {
-                        String selectedDeviceName = devicesList.get(which);
-                        for (BluetoothDevice d : pairedDevices) {
-                            if (selectedDeviceName.equals(d.getName()))
-                                connectToSelectedDevice(d);
+    private void showDisconnectDialog(View v) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+        builder.setMessage("¿Desea cerrar la conexión Bluetooth?")
+                .setPositiveButton("Sí", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        try {
+                            if (socket != null) {
+                                socket.close();
+                            }
+                            // Oculta las vistas relacionadas con la conexión
+                            findViewById(R.id.amb_lum_label).setVisibility(View.GONE);
+                            findViewById(R.id.amb_temp_label).setVisibility(View.GONE);
+                            findViewById(R.id.amb_lum_field).setVisibility(View.GONE);
+                            findViewById(R.id.amb_temp_field).setVisibility(View.GONE);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            showSnackbar("Error al cerrar la conexión Bluetooth");
                         }
                     }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // No hace nada si el usuario elige no cerrar la conexión
+                    }
                 });
-
-        builder.show();
+        builder.create().show();
     }
- */
+
     private void getData(String cityName) {
         if (mRequestQueue == null) {
             mRequestQueue = Volley.newRequestQueue(this);

@@ -115,14 +115,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/ambient_luminosity"
-                android:visibility="visible" />
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/amb_lum_field"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="TextView"
-                android:visibility="visible" />
+                android:text="@string/connecting"
+                android:visibility="gone" />
         </TableRow>
 
         <TableRow
@@ -134,14 +134,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/ambient_temperature"
-                android:visibility="visible" />
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/amb_temp_field"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="TextView"
-                android:visibility="visible" />
+                android:text="@string/connecting"
+                android:visibility="gone" />
         </TableRow>
 
     </TableLayout>
@@ -164,9 +164,9 @@
         android:layout_width="235dp"
         android:layout_height="64dp"
         android:drawableStart="@drawable/baseline_location"
+        android:hint="@string/insert_some_city"
         android:inputType="text"
         android:singleLine="true"
-        android:text="@string/insert_some_city"
         android:textColor="#FFFFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

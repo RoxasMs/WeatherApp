@@ -37,7 +37,6 @@ public class BluetoothAsyncTask extends AsyncTask<Void, String, Void> {
             }
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
-            throw new RuntimeException(e);
         }
         return null;
     }
@@ -51,9 +50,5 @@ public class BluetoothAsyncTask extends AsyncTask<Void, String, Void> {
         String[] parts = data.split("::");
         lumField.setText(parts[0]);
         tempField.setText(parts[1]);
-
-        lumField.setVisibility(View.VISIBLE);
-        tempField.setVisibility(View.VISIBLE);
-
     }
 }
